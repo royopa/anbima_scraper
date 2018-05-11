@@ -1,0 +1,27 @@
+[[source]]
+
+verify_ssl = true
+name = "pypi"
+url = "https://pypi.python.org/simple"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+request = "*"
+pandas = "*"
+tqdm = "*"
+requests = "*"
+xlrd = "*"
+pyexcel = "*"
+pyexcel-xls = "*"
+xlsxwriter = "*"
+bizdays = "*"
+
+
+[requires]
+
+python_version = "3.5"
