@@ -87,7 +87,7 @@ def remove_zero_files(folder_name):
                 os.remove(path_file)
 
 
-def import_files(folder_name, path_file_base):
+def import_files(folder_name, path_file_base, ultima_data_base):
     file_list = os.listdir(r"downloads/"+folder_name+"/")
     for file_name in file_list:
         if not file_name.endswith('.csv'):
@@ -99,6 +99,14 @@ def import_files(folder_name, path_file_base):
                 print('extrair', path_file)
                 df = pd.read_csv(path_file, sep=';', skiprows=1, encoding='latin1', header=0)
                 df['Data de Referência'] = pd.to_datetime(df['Data de Referência'], format='%d/%m/%Y', errors='ignore')
+
+                # seleciona apenas os registros com data de referencia maior que a data base
+                df = df[(df['Data de Referência'] > ultima_data_base)]
+        
+                if len(df) == 0:
+                    print('Nenhum registro a ser importado', path_file)
+                    os.remove(path_file)
+                    continue
 
                 # importa para o csv base
                 with open(path_file_base, 'a', newline='') as baseFile:
@@ -146,7 +154,7 @@ def import_files(folder_name, path_file_base):
                             'redemption_yield': row['Redemption Yield']
                         }
                         writer.writerow(row_inserted)
-
+                os.remove(path_file)
 
 def generate_csv_base(path_file_base):
     # organizar o arquivo base por dt_referencia
@@ -191,7 +199,7 @@ def main():
             download_file(url, dt_referencia, file_name)
 
     remove_zero_files('quadro-resumo')
-    import_files('quadro-resumo', path_file_base)
+    import_files('quadro-resumo', path_file_base, ultima_data_base)
 
     # organizar o arquivo base por dt_referencia
     generate_csv_base(path_file_base)
