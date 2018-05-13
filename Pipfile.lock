@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4f3a1468b8b7b335395b4bde45e9b567749b32f17314a1d3914539317ffbff20"
+            "sha256": "6ad0baa68dd21fee6df6fd52f8d6cb1010f057626c436171c2e0e4ab35a02595"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.5"
+            "python_version": "3.6"
         },
         "sources": [
             {
@@ -20,6 +20,7 @@
             "hashes": [
                 "sha256:34213953d19ed32bd4344150bcfb05b5b5d5a5f35719894159cb05aae01a0b6d"
             ],
+            "index": "pypi",
             "version": "==0.2.0"
         },
         "certifi": {
@@ -35,12 +36,6 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
-        },
-        "get": {
-            "hashes": [
-                "sha256:5c8b3446b2f90af95f0be998454344cfba78b4d4f46e4f408a2b5961286700f7"
-            ],
-            "version": "==1.0.2"
         },
         "idna": {
             "hashes": [
@@ -102,25 +97,15 @@
                 "sha256:c2cd884794924687edbaad40d18ac984054d247bb877890932c4d41e3c3aba31",
                 "sha256:c372db80a5bcb143c9cb254d50f902772c3b093a4f965275197ec2d2184b1e61"
             ],
+            "index": "pypi",
             "version": "==0.22.0"
-        },
-        "post": {
-            "hashes": [
-                "sha256:9f2b5bbc943b066f61dcc7d4c76cc6fe9eeee57ebe3c6154e0389599f9c0d63a"
-            ],
-            "version": "==1.0.1"
-        },
-        "public": {
-            "hashes": [
-                "sha256:86e6fabc9742eac81fea6c5a52f65ecdf51414b2638e02f2c73bc3c64011201c"
-            ],
-            "version": "==1.0.2"
         },
         "pyexcel": {
             "hashes": [
                 "sha256:4c470a7059d54e1c24112008a3410d1ff16d65fc47fa32a87d9581f1d92db11e",
                 "sha256:7554b140729eaa679c0d627d5a44c787cd7216a917fa61f3da9f6b91438c9d43"
             ],
+            "index": "pypi",
             "version": "==0.5.8"
         },
         "pyexcel-io": {
@@ -135,6 +120,7 @@
                 "sha256:60bba3e80a0aa6af62f8d8a0fdff292b2acba14c047374611986ae572c430a98",
                 "sha256:6fed6e1beffb0a612602da62d80ebde71b645538021201018e564db9096fe67f"
             ],
+            "index": "pypi",
             "version": "==0.5.7"
         },
         "python-dateutil": {
@@ -151,23 +137,12 @@
             ],
             "version": "==2018.4"
         },
-        "query-string": {
-            "hashes": [
-                "sha256:7f534eb5cc389d279942852224b2b98f786d4290c1bcb0cdcc9e417e887b200a"
-            ],
-            "version": "==1.0.1"
-        },
-        "request": {
-            "hashes": [
-                "sha256:0cadab109e7ce63c2b9dfd55277f47a22be04486e4d7255fe78ff2e9e5f54003"
-            ],
-            "version": "==1.0.1"
-        },
         "requests": {
             "hashes": [
                 "sha256:6a1b267aa90cac58ac3a765d067950e7dbbf75b1da07e895d1f594193a40a38b",
                 "sha256:9c443e7324ba5b85070c4a818ade28bfabedf16ea10206da1132edaa6dda237e"
             ],
+            "index": "pypi",
             "version": "==2.18.4"
         },
         "six": {
@@ -188,6 +163,7 @@
                 "sha256:9fc19da10d7c962613cbcb9cdced41230deb31d9e20332da84c96917ff534281",
                 "sha256:ce205451a27b6050faed0bb2bcbea96c6a550f8c27cd2b5441d72e948113ad18"
             ],
+            "index": "pypi",
             "version": "==4.23.3"
         },
         "urllib3": {
@@ -202,6 +178,7 @@
                 "sha256:83a1d2f1091078fb3f65876753b5302c5cfb6a41de64b9587b74cefa75157148",
                 "sha256:8a21885513e6d915fe33a8ee5fdfa675433b61405ba13e2a69e62ee36828d7e2"
             ],
+            "index": "pypi",
             "version": "==1.1.0"
         },
         "xlsxwriter": {
@@ -209,6 +186,7 @@
                 "sha256:86a55f62f783cda5b9b8ab71fb1a96c20b5d079fb88b3fcef6867e78af9f1dbd",
                 "sha256:ad947fd9e8edfb64f25e0ccfb161e109f279e5a5520b3dd22ddc03b7f8220887"
             ],
+            "index": "pypi",
             "version": "==1.0.4"
         },
         "xlwt": {

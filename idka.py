@@ -1,39 +1,16 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import requests
-import time
 import csv
 import datetime
 import os
 import pandas as pd
-import pyexcel_xls
-from tqdm import tqdm
-from datetime import timedelta
-
-
-def get_ultima_data_disponivel_base(path_file_base):
-    # verifica a última data disponível na base
-    with open(path_file_base, 'r') as f:
-        for row in reversed(list(csv.reader(f))):
-            data = row[0].split(';')[0]
-            if data == 'dt_referencia':
-                return None
-            data = row[0].split(';')[0]
-            return datetime.datetime.strptime(data, '%Y-%m-%d').date()
-
-
-def remove_old_files():
-    file_list = os.listdir(r"downloads")
-    for file_name in file_list:
-        if not file_name.endswith('.xls'):
-            continue
-        today = datetime.datetime.now().strftime('%d.%m.%Y')
-        data_arquivo = file_name.split('.xls')[-2][-10:]
-        if today != data_arquivo:
-            os.remove(os.path.join('downloads', file_name))
+import utils
 
 
 def download_file(url, dt_referencia, file_name):
+    # verifica se o arquivo deve ser baixado
+    if not utils.check_download(dt_referencia, file_name):
+        return False
     dt_referencia = dt_referencia.strftime('%d/%m/%Y')
     params = {
         'Dt_Ref': dt_referencia,
@@ -44,70 +21,87 @@ def download_file(url, dt_referencia, file_name):
         'saida': 'csv',
         'Idioma': 'PT'
     }
-
-    response = requests.get(url, params=params, stream=True)
-    with open(file_name, "wb") as handle:
-        for data in tqdm(response.iter_content()):
-            handle.write(data)
-    handle.close()
+    utils.download(url, params, file_name)
 
 
-def generate_csv_base(df, path_file_base):
-    # organizar o arquivo base por dt_referencia
-    df = pd.read_csv(path_file_base, sep=';')
-    df = df.sort_values('dt_referencia')
-    # set the index
-    df.set_index('dt_referencia', inplace=True)
-    df.to_csv(path_file_base, sep=';')
+def import_files(folder_name, path_file_base, ultima_data_base):
+    file_list = os.listdir(r"downloads/"+folder_name+"/")
+    for file_name in file_list:
+        if not file_name.endswith('.csv'):
+            continue
+        path_file = os.path.join('downloads', folder_name, file_name)
+        with open(path_file, 'r', encoding='latin1') as f:
+            first_line = f.readline()
+            if 'Data de Referência:' in first_line:
+                data_line = first_line.split(' ')[-1].strip()
+                dt_referencia = datetime.datetime.strptime(data_line, '%d/%m/%Y').date()
 
+                print('extrair', path_file)
+                df = pd.read_csv(path_file, sep=';', skiprows=2, encoding='latin1', header=0, skipfooter=3)
+                df['dt_referencia'] = dt_referencia
 
-def generate_xlsx_base(df, path_saida):
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(path_saida, engine='xlsxwriter')
-    # Convert the dataframe to an XlsxWriter Excel object.
-    df.to_excel(writer, sheet_name='Sheet1')
-    # Close the Pandas Excel writer and output the Excel file.
-    writer.save()
+                # seleciona apenas os registros com data de referencia maior que a data base
+                df = df[(df['dt_referencia'] > ultima_data_base)]
+        
+                if len(df) == 0:
+                    print('Nenhum registro a ser importado')
+                    os.remove(path_file)
+                    continue
 
-
-def xrange(x):
-    return iter(range(x))
-
-
-def datetime_range(start=None, end=None):
-    span = end - start
-    for i in xrange(span.days + 1):
-        yield start + timedelta(days=i)
+                # importa para o csv base
+                with open(path_file_base, 'a', newline='') as baseFile:
+                    fieldnames = [
+                        'dt_referencia',
+                        'no_indexador',
+                        'no_indice',
+                        'nu_indice',
+                        'ret_dia_perc',
+                        'ret_mes_perc',
+                        'ret_ano_perc',
+                        'ret_12_meses_perc',
+                        'vol_aa_perc',
+                        'taxa_juros_aa_perc_compra_d1',
+                        'taxa_juros_aa_perc_venda_d0'
+                    ]
+                    writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+                    # insere cada registro na database
+                    for index, row in df.iterrows():
+                        row_inserted = {
+                            'dt_referencia': row['dt_referencia'],
+                            'no_indexador': row['Indexador'],
+                            'no_indice': row['Índices'],
+                            'nu_indice': row['Nº Índice'],
+                            'ret_dia_perc': row['Retorno (% Dia)'],
+                            'ret_mes_perc': row['Retorno (% Mês)'],
+                            'ret_ano_perc': row['Retorno (% Ano)'],
+                            'ret_12_meses_perc': row['Retorno (% 12 Meses)'],
+                            'vol_aa_perc': row['Volatilidade (% a.a.) *'],
+                            'taxa_juros_aa_perc_compra_d1': row['Taxa de Juros (% a.a.) [Compra (D-1)]'],
+                            'taxa_juros_aa_perc_venda_d0': row['Taxa de Juros (% a.a.) [Venda (D-0)]']
+                        }
+                        writer.writerow(row_inserted)
+                #os.remove(path_file)
 
 
 def main():
-    # apaga arquivos antigos
-    remove_old_files()
+    path_file_base = os.path.join('bases', 'idka_base.csv')
     # verifica a última data disponível na base 
-    name_file_base = 'idka_base.csv'
-    path_file_base = os.path.join('bases', name_file_base)
-    
-    # ultima data base dispon[ivel
-    ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
-    print('Última data base disponível:', ultima_data_base)
-    if (ultima_data_base is None):
-        ultima_data_base = datetime.date(2010, 11, 17)
+    ultima_data_base = utils.get_ultima_data_base(path_file_base)    
 
     # faz o download do csv no site da anbima
     url = 'http://www.anbima.com.br/informacoes/idka/IDkA-down.asp'
-    today = datetime.datetime.now().date()
-    path_download = os.path.join('downloads', 'idka')
-    if not os.path.exists(path_download):
-        os.makedirs(path_download)
+    name_download_folder = 'idka'
+    path_download = utils.prepare_download_folder(name_download_folder)
 
-    for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
+    for dt_referencia in reversed(list(utils.datetime_range(start=ultima_data_base, end=datetime.datetime.now().date()))):
         path_file = os.path.join(path_download, dt_referencia.strftime('%Y%m%d') + '_idka.csv')
-        print(path_file)
-        # faz o download do arquivo caso ele ainda não tiver sido baixado
-        if not os.path.exists(path_file):
-            download_file(url, dt_referencia, path_file)
-    
-    print("Arquivos baixados com sucesso")
+        download_file(url, dt_referencia, path_file)
+
+    utils.remove_zero_files(name_download_folder)
+    import_files(name_download_folder, path_file_base, ultima_data_base)
+    # organizar o arquivo base por dt_referencia
+    utils.generate_csv_base(path_file_base)
+    print("Arquivos baixados com sucesso e importados para a base de dados")    
 
 
 if __name__ == '__main__':
