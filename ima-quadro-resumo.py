@@ -72,6 +72,7 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                     writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
                     # insere cada registro na database
                     for index, row in df.iterrows():
+                        print(index)
                         row_inserted = {
                             'dt_referencia': row['Data de Referência'].date(),
                             'no_indice': row['Índice'],

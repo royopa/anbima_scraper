@@ -8,6 +8,7 @@ install:
 
 script:
   - "python ./ima-quadro-resumo.py"
+  - "python ./idka.py"
 
 notifications:
   email:

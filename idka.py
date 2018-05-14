@@ -37,7 +37,7 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                 dt_referencia = datetime.datetime.strptime(data_line, '%d/%m/%Y').date()
 
                 print('extrair', path_file)
-                df = pd.read_csv(path_file, sep=';', skiprows=2, encoding='latin1', header=0, skipfooter=3)
+                df = pd.read_csv(path_file, sep=';', skiprows=2, encoding='latin1', header=0, skipfooter=3, engine='python')
                 df['dt_referencia'] = dt_referencia
 
                 # seleciona apenas os registros com data de referencia maior que a data base
@@ -66,6 +66,7 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                     writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
                     # insere cada registro na database
                     for index, row in df.iterrows():
+                        print(index)
                         row_inserted = {
                             'dt_referencia': row['dt_referencia'],
                             'no_indexador': row['Indexador'],
@@ -80,7 +81,7 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                             'taxa_juros_aa_perc_venda_d0': row['Taxa de Juros (% a.a.) [Venda (D-0)]']
                         }
                         writer.writerow(row_inserted)
-                #os.remove(path_file)
+                os.remove(path_file)
 
 
 def main():
