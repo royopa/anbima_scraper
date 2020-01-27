@@ -23,6 +23,9 @@ def check_download(dt_referencia, file_name):
 
 def download(url, params, file_name):
     response = requests.get(url, params=params, stream=True)
+    if response.status_code != 200:
+        'Nenhum arquivo encontrado nessa url'
+        return False    
     with open(file_name, "wb") as handle:
         for data in tqdm(response.iter_content()):
             handle.write(data)

@@ -7,12 +7,15 @@ install:
   - "pip install -r ./requirements.txt"
 
 script:
-  - "python ./ima-quadro-resumo.py"
+  - "python ./debentures-merc-secundario.py"
   - "python ./idka.py"
+  - "python ./ima-carteiras.py"
+  - "python ./ima-quadro-resumo.py"
+  - "python ./titulos-publicos-merc-secundario.py"
 
 notifications:
   email:
     recipients:
       - royopa@gmail.com
     on_success: never # default: change
-    on_failure: always # default: always
+    on_failure: change # default: always

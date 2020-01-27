@@ -15,7 +15,8 @@ def get_ultima_data_disponivel_base(path_file_base):
     # verifica a última data disponível na base
     with open(path_file_base, 'r') as f:
         for row in reversed(list(csv.reader(f))):
-            data = row[0].split(';')[0]
+            print(row)
+            data = row.split(';')[0]
             if data == 'dt_referencia':
                 return None
             data = row[0].split(';')[0]
@@ -37,6 +38,11 @@ def download_file(url, dt_referencia, file_name):
     dt_referencia = dt_referencia.strftime('%y%m%d')
     url = url + dt_referencia + '.txt'
     response = requests.get(url, stream=True)
+
+    if response.status_code != 200:
+        'Nenhum arquivo encontrado nessa url'
+        return False
+
     with open(file_name, "wb") as handle:
         for data in tqdm(response.iter_content()):
             handle.write(data)
@@ -75,17 +81,17 @@ def main():
     # apaga arquivos antigos
     remove_old_files()
     # verifica a última data disponível na base 
-    name_file_base = 'ima_quadro_resumo_base.csv'
+    name_file_base = 'debentures_base.csv'
     path_file_base = os.path.join('bases', name_file_base)
     
     # ultima data base dispon[ivel
     ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
     print('Última data base disponível:', ultima_data_base)
     if (ultima_data_base is None):
-        ultima_data_base = datetime.date(2010, 11, 17)
+        ultima_data_base = datetime.date(2019, 1, 1)
 
     # faz o download do csv no site da anbima
-    url = 'http://www.anbima.com.br/merc_sec_debentures/arqs/db'
+    url = 'https://www.anbima.com.br/informacoes/merc-sec-debentures/arqs/db'
     today = datetime.datetime.now().date()
     for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
         path_download = os.path.join('downloads', 'debentures')
@@ -94,7 +100,7 @@ def main():
 
         file_path = os.path.join(
             path_download,
-            dt_referencia.strftime('%Y%m%d') + '_debentures.txt'
+            dt_referencia.strftime('%y%m%d') + '.txt'
         )
         print(file_path)
         # faz o download do arquivo caso ele ainda não tiver sido baixado
