@@ -114,6 +114,9 @@ def get_ultima_data_base(path_file_base):
 
 
 def prepare_download_folder(name_download_folder):
+    path_download = os.path.join('downloads')
+    if not os.path.exists(path_download):
+        os.makedirs(path_download)
     path_download = os.path.join('downloads', name_download_folder)
     if not os.path.exists(path_download):
         os.makedirs(path_download)
