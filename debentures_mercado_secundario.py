@@ -15,7 +15,10 @@ import utils
 
 
 def remove_old_files():
-    file_list = os.listdir(r"downloads")
+    path_download = os.path.join('downloads')
+    if not os.path.exists(path_download):
+        os.makedirs(path_download)
+    file_list = os.listdir(path_download)
     for file_name in file_list:
         if not file_name.endswith('.xls'):
             continue
