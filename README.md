@@ -10,14 +10,14 @@ ANBIMA scraper é um projeto para captura de dados do site da [ANBIMA](https://w
 Para instalar as dependências do projeto utilize o comando abaixo:
 
 ```sh
-> cd anbima-scraper
+> cd anbima_scraper
 > pip install -r requirements.txt
 ```
 
 Ou caso vocë utilize o pipenv, utilize o comando abaixo e ative o virtualenv:
 
 ```sh
-> cd anbima-scraper
+> cd anbima_scraper
 > pipenv install
 > pipenv shell
 ```
@@ -37,14 +37,14 @@ Fonte: https://www.anbima.com.br/pt_br/informar/consulta-idka.htm
 ### Mercado Secundário de Debêntures - Taxas Médias
 
 ```sh
-> python debentures-merc.secundario.py
+> python debentures_mercado_secundario.py
 ```
 
 ### Carteiras IMA
 Fonte: https://www.anbima.com.br/pt_br/informar/ima-carteira-teorica.htm
 
 ```sh
-> python ima-carteiras.py
+> python ima_carteiras.py
 ```
 
 ### IMA Quadro Resumo
@@ -52,9 +52,10 @@ Fonte: https://www.anbima.com.br/pt_br/informar/ima-resultados-diarios.htm
 
 
 ```sh
-> python ima-quadro-resumo.py
+> python ima_quadro_resumo.py
 ```
 
+## TO DO
 
 ### Indicadores ANBIMA
 
