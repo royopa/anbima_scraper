@@ -57,14 +57,21 @@ Fonte: https://www.anbima.com.br/pt_br/informar/ima-resultados-diarios.htm
 > python ima_quadro_resumo.py
 ```
 
-## TO DO
 
 ### Indicadores ANBIMA
 
 SELIC, CDI, IGP-M, IPCA, Dólar, Euro, TR, TBF, FDS
 
-https://www.anbima.com.br/informacoes/indicadores/
-https://www.anbima.com.br/informacoes/indicadores/arqs/indicadores.xls
+Fonte: https://www.anbima.com.br/informacoes/indicadores/
+
+```sh
+> python indicadores_anbima.py
+```
+
+Os arquivos de saída estarão em formato csv na pasta bases.
+
+
+## TO DO
 
 
 ### Curva de Juros - Intradia
