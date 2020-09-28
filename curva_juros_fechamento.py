@@ -13,16 +13,15 @@ def download_file(url, dt_referencia, file_name):
     # verifica se o arquivo deve ser baixado
     if not utils.check_download(dt_referencia, file_name):
         return False
-    dt_referencia = dt_referencia.strftime('%d/%m/%Y')
+    dt_referencia_formatada = dt_referencia.strftime('%d/%m/%Y')
     params = {
-        'Dt_Ref': dt_referencia,
-        'DataIni': dt_referencia,
-        'DataFim': dt_referencia,
-        'indiceI': '',
-        'indiceP': '',
+        'escolha': 2,
+        'Dt_Ref': dt_referencia_formatada,
+        'Dt_Ref_Ver': '20000101',
         'saida': 'csv',
         'Idioma': 'PT'
     }
+
     utils.download(url, params, file_name)
 
 
@@ -36,15 +35,17 @@ def import_files(folder_name, path_file_base, ultima_data_base):
             first_line = f.readline()
             if 'Data de Referência:' in first_line:
                 data_line = first_line.split(' ')[-1].strip()
-                dt_referencia = datetime.datetime.strptime(data_line, '%d/%m/%Y').date()
+                dt_referencia = datetime.datetime.strptime(
+                    data_line, '%d/%m/%Y').date()
 
                 print('extrair', path_file)
-                df = pd.read_csv(path_file, sep=';', skiprows=2, encoding='latin1', header=0, skipfooter=3, engine='python')
+                df = pd.read_csv(path_file, sep=';', skiprows=2,
+                                 encoding='latin1', header=0, skipfooter=3, engine='python')
                 df['dt_referencia'] = dt_referencia
 
                 # seleciona apenas os registros com data de referencia maior que a data base
                 df = df[(df['dt_referencia'] > ultima_data_base)]
-        
+
                 if len(df) == 0:
                     print('Nenhum registro a ser importado')
                     os.remove(path_file)
@@ -65,7 +66,8 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                         'taxa_juros_aa_perc_compra_d1',
                         'taxa_juros_aa_perc_venda_d0'
                     ]
-                    writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+                    writer = csv.DictWriter(
+                        baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
                     # insere cada registro na database
                     for index, row in df.iterrows():
                         print(index)
@@ -87,24 +89,26 @@ def import_files(folder_name, path_file_base, ultima_data_base):
 
 
 def main():
-    path_file_base = os.path.join('bases', 'idka_base.csv')
-    # verifica a última data disponível na base 
-    ultima_data_base = utils.get_ultima_data_base(path_file_base)    
+    path_file_base = os.path.join('bases', 'curva_juros_fechamento.csv')
+    # verifica a última data disponível na base
+    ultima_data_base = utils.get_ultima_data_base(path_file_base)
 
     # faz o download do csv no site da anbima
-    url = 'http://www.anbima.com.br/informacoes/idka/IDkA-down.asp'
-    name_download_folder = 'idka'
+    url = 'https://www.anbima.com.br/informacoes/est-termo/CZ-down.asp'
+    name_download_folder = 'curva_juros_fechamento'
     path_download = utils.prepare_download_folder(name_download_folder)
 
-    for dt_referencia in reversed(list(utils.datetime_range(start=ultima_data_base, end=datetime.datetime.now().date()))):
-        path_file = os.path.join(path_download, dt_referencia.strftime('%Y%m%d') + '_idka.csv')
+    for dt_referencia in list(utils.datetime_range(start=ultima_data_base, end=datetime.datetime.now().date())):
+        path_file = os.path.join(
+            path_download, dt_referencia.strftime('%Y%m%d') + '_curva_juros_fechamento.csv')
         download_file(url, dt_referencia, path_file)
 
-    utils.remove_zero_files(name_download_folder)
-    import_files(name_download_folder, path_file_base, ultima_data_base)
+    # utils.remove_zero_files(name_download_folder)
+    #import_files(name_download_folder, path_file_base, ultima_data_base)
+
     # organizar o arquivo base por dt_referencia
-    utils.generate_csv_base(path_file_base)
-    print("Arquivos baixados com sucesso e importados para a base de dados")    
+    # utils.generate_csv_base(path_file_base)
+    print("Arquivos baixados com sucesso e importados para a base de dados")
 
 
 if __name__ == '__main__':

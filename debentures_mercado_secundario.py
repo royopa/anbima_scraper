@@ -11,17 +11,7 @@ import pyexcel_xls
 import requests
 from tqdm import tqdm
 
-
-def get_ultima_data_disponivel_base(path_file_base):
-    # verifica a última data disponível na base
-    with open(path_file_base, 'r') as f:
-        for row in reversed(list(csv.reader(f))):
-            print(row)
-            data = row.split(';')[0]
-            if data == 'dt_referencia':
-                return None
-            data = row[0].split(';')[0]
-            return datetime.datetime.strptime(data, '%Y-%m-%d').date()
+import utils
 
 
 def remove_old_files():
@@ -81,22 +71,21 @@ def datetime_range(start=None, end=None):
 def main():
     # apaga arquivos antigos
     remove_old_files()
-    # verifica a última data disponível na base 
+    # verifica a última data disponível na base
     name_file_base = 'debentures_base.csv'
     path_file_base = os.path.join('bases', name_file_base)
-    
-    # ultima data base dispon[ivel
-    ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
-    print('Última data base disponível:', ultima_data_base)
-    if (ultima_data_base is None):
-        ultima_data_base = datetime.date(2019, 1, 1)
+
+    today = datetime.datetime.now().date()
+
+    # verifica a última data disponível na base
+    ultima_data_base = utils.get_ultima_data_base(path_file_base)
 
     # faz o download do csv no site da anbima
     url = 'https://www.anbima.com.br/informacoes/merc-sec-debentures/arqs/db'
-    today = datetime.datetime.now().date()
     for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
-        if not os.path.exists('downloads'):
-            os.makedirs('downloads')
+        path_download = os.path.join('downloads')
+        if not os.path.exists(path_download):
+            os.makedirs(path_download)
         path_download = os.path.join('downloads', 'debentures')
         if not os.path.exists(path_download):
             os.makedirs(path_download)

@@ -1,14 +1,25 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import requests
 import csv
 import datetime
 import os
-import pandas as pd
+import random
 from datetime import timedelta
-from bizdays import Calendar
-from bizdays import load_holidays
+
+import pandas as pd
+import requests
+from bizdays import Calendar, load_holidays
 from tqdm import tqdm
+
+
+def load_useragents():
+    uas = []
+    with open("user-agents.txt", 'rb') as uaf:
+        for ua in uaf.readlines():
+            if ua:
+                uas.append(ua.strip()[0:-1-0])
+    random.shuffle(uas)
+    return uas
 
 
 def check_download(dt_referencia, file_name):
@@ -17,15 +28,16 @@ def check_download(dt_referencia, file_name):
         return False
     if os.path.exists(file_name):
         print(file_name, 'arquivo já baixado')
-        return False    
+        return False
     return True
 
 
 def download(url, params, file_name):
-    response = requests.get(url, params=params, stream=True)
+    headers = {'User-Agent': random.choice(load_useragents())}
+    response = requests.get(url, params=params, stream=True, headers=headers)
     if response.status_code != 200:
         'Nenhum arquivo encontrado nessa url'
-        return False    
+        return False
     with open(file_name, "wb") as handle:
         for data in tqdm(response.iter_content()):
             handle.write(data)

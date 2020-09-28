@@ -41,6 +41,14 @@ Fonte: https://www.anbima.com.br/pt_br/informar/ima-carteira-teorica.htm
 > python ima_carteiras.py
 ```
 
+### Curvas de Juros - Fechamento
+Fonte: https://www.anbima.com.br/pt_br/informar/curvas-de-juros-fechamento.htm
+
+```sh
+> python curva_juros_fechamento.py
+```
+
+
 ### IMA Quadro Resumo
 Fonte: https://www.anbima.com.br/pt_br/informar/ima-resultados-diarios.htm
 
@@ -65,8 +73,7 @@ Fonte: https://www.anbima.com.br/pt_br/informar/curva-de-juros-intradia.htm
 Disponibiliza as curvas de juros zero-cupom soberanas, prefixada e IPCA, extraídas a partir da coleta de spreads de compra e venda realizada pela Associação às 12h, a partir de 27/03/2017. Até 24/03/2017, as curvas consideravam os spreads coletados de 12h30.
 
 
-### Curvas de Juros - Fechamento
-https://www.anbima.com.br/pt_br/informar/curvas-de-juros-fechamento.htm
+
 
 
 ### Sistema Curvas de Crédito
