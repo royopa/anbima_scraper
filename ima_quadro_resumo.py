@@ -3,7 +3,9 @@
 import csv
 import datetime
 import os
+
 import pandas as pd
+
 import utils
 
 
@@ -36,12 +38,14 @@ def import_files(folder_name, path_file_base, ultima_data_base):
             first_line = f.readline()
             if 'QUADRO-RESUMO' in first_line:
                 print('extrair', path_file)
-                df = pd.read_csv(path_file, sep=';', skiprows=1, encoding='latin1', header=0)
-                df['Data de Referência'] = pd.to_datetime(df['Data de Referência'], format='%d/%m/%Y', errors='ignore')
+                df = pd.read_csv(path_file, sep=';', skiprows=1,
+                                 encoding='latin1', header=0)
+                df['Data de Referência'] = pd.to_datetime(
+                    df['Data de Referência'], format='%d/%m/%Y', errors='ignore')
 
                 # seleciona apenas os registros com data de referencia maior que a data base
                 df = df[(df['Data de Referência'] > ultima_data_base)]
-        
+
                 if len(df) == 0:
                     print('Nenhum registro a ser importado', path_file)
                     os.remove(path_file)
@@ -69,7 +73,8 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                         'yield',
                         'redemption_yield'
                     ]
-                    writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+                    writer = csv.DictWriter(
+                        baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
                     # insere cada registro na database
                     for index, row in df.iterrows():
                         print(index)
@@ -99,15 +104,16 @@ def import_files(folder_name, path_file_base, ultima_data_base):
 
 def main():
     path_file_base = os.path.join('bases', 'ima_quadro_resumo_base.csv')
-    # verifica a última data disponível na base 
+    # verifica a última data disponível na base
     ultima_data_base = utils.get_ultima_data_base(path_file_base)
     # faz o download do csv no site da anbima
     url = 'http://www.anbima.com.br/informacoes/ima/IMA-geral-down.asp'
     name_download_folder = 'quadro-resumo'
     path_download = utils.prepare_download_folder(name_download_folder)
-   
+
     for dt_referencia in reversed(list(utils.datetime_range(start=ultima_data_base, end=datetime.datetime.now().date()))):
-        file_name = os.path.join(path_download, dt_referencia.strftime('%Y%m%d') + '_ima_quadro_resumo.csv')
+        file_name = os.path.join(path_download, dt_referencia.strftime(
+            '%Y%m%d') + '_ima_quadro_resumo.csv')
         download_file(url, dt_referencia, file_name)
 
     utils.remove_zero_files(name_download_folder)

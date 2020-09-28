@@ -1,22 +1,22 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import requests
-import time
 import csv
 import datetime
 import os
+import time
+from datetime import timedelta
+
 import pandas as pd
 import pyexcel_xls
+import requests
 from tqdm import tqdm
-from datetime import timedelta
 
 
 def get_ultima_data_disponivel_base(path_file_base):
     # verifica a última data disponível na base
     with open(path_file_base, 'r') as f:
         for row in reversed(list(csv.reader(f))):
-            print(row)
-            data = row.split(';')[0]
+            data = row[0].split(';')[0]
             if data == 'dt_referencia':
                 return None
             data = row[0].split(';')[0]
@@ -34,15 +34,21 @@ def remove_old_files():
             os.remove(os.path.join('downloads', file_name))
 
 
-def download_file(url, dt_referencia, file_name):
-    dt_referencia = dt_referencia.strftime('%y%m%d')
-    url = url + dt_referencia + '.txt'
-    response = requests.get(url, stream=True)
+def download_file_carteira(url, dt_referencia, file_name, indice):
+    dt_referencia = dt_referencia.strftime('%d/%m/%Y')
+    params = {
+        'Titulo_1': 'indice',
+        'Indice': 'indice',
+        'Consulta_1': 'Ambos',
+        'Dt_Ref': dt_referencia,
+        'DataIni': dt_referencia,
+        'DataFim': dt_referencia,
+        'Consulta': 'Ambos',
+        'saida': 'csv',
+        'Idioma': 'PT'
+    }
 
-    if response.status_code != 200:
-        'Nenhum arquivo encontrado nessa url'
-        return False
-
+    response = requests.get(url, params=params, stream=True)
     with open(file_name, "wb") as handle:
         for data in tqdm(response.iter_content()):
             handle.write(data)
@@ -80,34 +86,48 @@ def datetime_range(start=None, end=None):
 def main():
     # apaga arquivos antigos
     remove_old_files()
-    # verifica a última data disponível na base 
-    name_file_base = 'debentures_base.csv'
+    # verifica a última data disponível na base
+    name_file_base = 'ima_quadro_resumo_base.csv'
     path_file_base = os.path.join('bases', name_file_base)
-    
+
     # ultima data base dispon[ivel
     ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
     print('Última data base disponível:', ultima_data_base)
     if (ultima_data_base is None):
-        ultima_data_base = datetime.date(2019, 1, 1)
+        ultima_data_base = datetime.date(2010, 11, 17)
+
+    carteiras = [
+        'irf-m',
+        'irf-m 1',
+        'irf-m 1+',
+        'ima-b',
+        'ima-b 5',
+        'ima-b 5+',
+        'ima-c',
+        'ima-s',
+        'ima-geral',
+        'ima-geral ex-c'
+    ]
 
     # faz o download do csv no site da anbima
-    url = 'https://www.anbima.com.br/informacoes/merc-sec-debentures/arqs/db'
+    url = 'http://www.anbima.com.br/informacoes/ima/ima-carteira-down.asp'
     today = datetime.datetime.now().date()
     for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
-        path_download = os.path.join('downloads', 'debentures')
-        if not os.path.exists(path_download):
-            os.makedirs(path_download)
+        for carteira in carteiras:
+            path_download = os.path.join('downloads', carteira)
+            if not os.path.exists(path_download):
+                os.makedirs(path_download)
 
-        file_path = os.path.join(
-            path_download,
-            dt_referencia.strftime('%y%m%d') + '.txt'
-        )
-        print(file_path)
-        # faz o download do arquivo caso ele ainda não tiver sido baixado
-        if not os.path.exists(file_path):
-            download_file(url, dt_referencia, file_path)
+            file_name = os.path.join(
+                path_download,
+                dt_referencia.strftime('%Y%m%d') + '_' + carteira + '.csv'
+            )
+            print(file_name)
+            # faz o download do arquivo caso ele ainda não tiver sido baixado
+            if not os.path.exists(file_name):
+                download_file_carteira(url, dt_referencia, file_name, carteira)
 
-    print("Arquivos baixados com sucesso")
+    print("Arquivos baixados com sucesso e importados para a base de dados")
 
 
 if __name__ == '__main__':

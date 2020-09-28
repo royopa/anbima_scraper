@@ -1,21 +1,21 @@
 language: python
 python:
-  - "3.6"
+  - "3.8"
 
 install:
   - "pip install --upgrade pip"
   - "pip install -r ./requirements.txt"
 
 script:
-  - "python ./debentures-merc-secundario.py"
+  - "python ./debentures_mercado_secundario.py"
   - "python ./idka.py"
-  - "python ./ima-carteiras.py"
-  - "python ./ima-quadro-resumo.py"
-  - "python ./titulos-publicos-merc-secundario.py"
+  - "python ./ima_carteiras.py"
+  - "python ./ima_quadro_resumo.py"
+  - "python ./titulos_publicos_mercado_secundario.py"
 
 notifications:
   email:
     recipients:
       - royopa@gmail.com
-    on_success: never # default: change
+    on_success: change # default: change
     on_failure: change # default: always

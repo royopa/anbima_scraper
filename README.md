@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/royopa/anbima-scraper.svg?branch=master)](https://travis-ci.org/royopa/anbima-scraper)
+[![Build Status](https://travis-ci.org/royopa/anbima_scraper.svg?branch=master)](https://travis-ci.org/royopa/anbima_scraper)
 
 ANBIMA scraper
 --------------
@@ -16,17 +16,11 @@ Para instalar as dependências do projeto utilize o comando abaixo:
 
 Ou caso vocë utilize o pipenv, utilize o comando abaixo e ative o virtualenv:
 
-```sh
-> cd anbima_scraper
-> pipenv install
-> pipenv shell
-```
-
 ## Utilizando os programas
 
 #### Fazer o download e atualizar a base de dados
 
-Para fazer o download dos preços e atualizar as [bases de dados](https://github.com/royopa/anbima-scraper/blob/master/bases/) basta executar os programas com os comandos abaixo:
+Para fazer o download dos preços e atualizar as [bases de dados](https://github.com/royopa/anbima_scraper/blob/master/bases/) basta executar os programas com os comandos abaixo:
 
 ### IDkA - Índice de Duração Constante ANBIMA
 Fonte: https://www.anbima.com.br/pt_br/informar/consulta-idka.htm
