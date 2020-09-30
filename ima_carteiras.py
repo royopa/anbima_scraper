@@ -115,7 +115,7 @@ def main():
     # verifica a última data disponível na base
     today = datetime.now().date()
     cal = utils.get_calendar()
-    ultima_data_base = cal.offset(today, -6)
+    ultima_data_base = cal.offset(today, -5)
     dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
 
     for dt_referencia in reversed(dates_range):
@@ -128,7 +128,10 @@ def main():
                 path_download,
                 dt_referencia.strftime('%Y%m%d') + '_' + carteira + '.csv'
             )
-            print(file_name)
+
+            if utils.check_download(dt_referencia, file_name) is False:
+                break
+
             # faz o download do arquivo caso ele ainda não tiver sido baixado
             if not os.path.exists(file_name):
                 download_file_carteira(url, dt_referencia, file_name, carteira)

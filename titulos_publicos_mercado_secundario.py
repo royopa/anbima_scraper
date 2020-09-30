@@ -1,14 +1,14 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import requests
-import time
 import csv
-import datetime
 import os
+from datetime import datetime, timedelta
+
 import pandas as pd
-import pyexcel_xls
+import requests
 from tqdm import tqdm
-from datetime import timedelta
+
+import utils
 
 
 def get_ultima_data_disponivel_base(path_file_base):
@@ -19,7 +19,7 @@ def get_ultima_data_disponivel_base(path_file_base):
             if data == 'dt_referencia':
                 return None
             data = row[0].split(';')[0]
-            return datetime.datetime.strptime(data, '%Y-%m-%d').date()
+            return datetime.strptime(data, '%Y-%m-%d').date()
 
 
 def remove_old_files():
@@ -27,7 +27,7 @@ def remove_old_files():
     for file_name in file_list:
         if not file_name.endswith('.xls'):
             continue
-        today = datetime.datetime.now().strftime('%d.%m.%Y')
+        today = datetime.now().strftime('%d.%m.%Y')
         data_arquivo = file_name.split('.xls')[-2][-10:]
         if today != data_arquivo:
             os.remove(os.path.join('downloads', file_name))
@@ -74,10 +74,10 @@ def datetime_range(start=None, end=None):
 def main():
     # apaga arquivos antigos
     remove_old_files()
-    # verifica a última data disponível na base 
+    # verifica a última data disponível na base
     name_file_base = 'ima_quadro_resumo_base.csv'
     path_file_base = os.path.join('bases', name_file_base)
-    
+
     # ultima data base dispon[ivel
     ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
     print('Última data base disponível:', ultima_data_base)
@@ -87,16 +87,28 @@ def main():
     # faz o download do csv no site da anbima
     # lft
     url = 'http://www.anbima.com.br/informacoes/merc-sec/arqs/ms'
-    today = datetime.datetime.now().date()
-    for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
-        path_download = os.path.join('downloads', 'titulos-publicos-merc-secundario')
-        if not os.path.exists(path_download):
-            os.makedirs(path_download)
 
+    # verifica a última data disponível na base
+    today = datetime.now().date()
+    cal = utils.get_calendar()
+    ultima_data_base = cal.offset(today, -5)
+    dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
+
+    path_download = os.path.join(
+        'downloads', 'titulos-publicos-merc-secundario')
+    if not os.path.exists(path_download):
+        os.makedirs(path_download)
+
+    for dt_referencia in reversed(dates_range):
         file_path = os.path.join(
             path_download,
-            dt_referencia.strftime('%Y%m%d') + '_titulos-publicos.txt'
+            dt_referencia.strftime('%Y%m%d') + '_ms_titulos-publicos.txt'
         )
+
+        # verifica se o arquivo deve ser baixado
+        if not utils.check_download(dt_referencia, file_path):
+            continue
+
         print(file_path)
         # faz o download do arquivo caso ele ainda não tiver sido baixado
         if not os.path.exists(file_path):
