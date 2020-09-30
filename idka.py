@@ -85,7 +85,6 @@ def import_files(folder_name, path_file_base, ultima_data_base):
 
                 # insere cada registro na database
                 for index, row in df.iterrows():
-                    print(index)
                     row_inserted = {
                         'dt_referencia': row['dt_referencia'],
                         'no_indexador': row['Indexador'],
@@ -106,15 +105,17 @@ def import_files(folder_name, path_file_base, ultima_data_base):
 
 def main():
     path_file_base = os.path.join('bases', 'idka_base.csv')
-    # verifica a última data disponível na base
-    ultima_data_base = utils.get_ultima_data_base(path_file_base)
 
     # faz o download do csv no site da anbima
     url = 'http://www.anbima.com.br/informacoes/idka/IDkA-down.asp'
     name_download_folder = 'idka'
     path_download = utils.prepare_download_folder(name_download_folder)
 
+    # verifica a última data disponível na base
     today = datetime.now().date()
+    cal = utils.get_calendar()
+    ultima_data_base = cal.offset(today, -6)
+
     dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
 
     for dt_referencia in reversed(dates_range):
