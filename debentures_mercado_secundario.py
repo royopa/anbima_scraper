@@ -1,10 +1,9 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import csv
-import datetime
 import os
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pandas as pd
 import pyexcel_xls
@@ -34,7 +33,7 @@ def download_file(url, dt_referencia, file_name):
     response = requests.get(url, stream=True)
 
     if response.status_code != 200:
-        'Nenhum arquivo encontrado nessa url'
+        print(url, 'Erro', response.status_code)
         return False
 
     with open(file_name, "wb") as handle:
@@ -78,14 +77,15 @@ def main():
     name_file_base = 'debentures_base.csv'
     path_file_base = os.path.join('bases', name_file_base)
 
-    today = datetime.datetime.now().date()
-
     # verifica a última data disponível na base
-    ultima_data_base = utils.get_ultima_data_base(path_file_base)
+    today = datetime.now().date()
+    cal = utils.get_calendar()
+    ultima_data_base = cal.offset(today, -6)
+    dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
 
     # faz o download do csv no site da anbima
     url = 'https://www.anbima.com.br/informacoes/merc-sec-debentures/arqs/db'
-    for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
+    for dt_referencia in reversed(dates_range):
         path_download = os.path.join('downloads')
         if not os.path.exists(path_download):
             os.makedirs(path_download)
@@ -97,7 +97,7 @@ def main():
             path_download,
             dt_referencia.strftime('%y%m%d') + '.txt'
         )
-        print(file_path)
+
         # faz o download do arquivo caso ele ainda não tiver sido baixado
         if not os.path.exists(file_path):
             download_file(url, dt_referencia, file_path)

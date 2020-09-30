@@ -115,7 +115,6 @@ def main():
     today = datetime.now().date()
     cal = utils.get_calendar()
     ultima_data_base = cal.offset(today, -6)
-
     dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
 
     for dt_referencia in reversed(dates_range):

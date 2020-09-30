@@ -1,15 +1,15 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import csv
-import datetime
 import os
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pandas as pd
-import pyexcel_xls
 import requests
 from tqdm import tqdm
+
+import utils
 
 
 def get_ultima_data_disponivel_base(path_file_base):
@@ -20,7 +20,7 @@ def get_ultima_data_disponivel_base(path_file_base):
             if data == 'dt_referencia':
                 return None
             data = row[0].split(';')[0]
-            return datetime.datetime.strptime(data, '%Y-%m-%d').date()
+            return datetime.strptime(data, '%Y-%m-%d').date()
 
 
 def remove_old_files():
@@ -111,8 +111,14 @@ def main():
 
     # faz o download do csv no site da anbima
     url = 'http://www.anbima.com.br/informacoes/ima/ima-carteira-down.asp'
-    today = datetime.datetime.now().date()
-    for dt_referencia in reversed(list(datetime_range(start=ultima_data_base, end=today))):
+
+    # verifica a última data disponível na base
+    today = datetime.now().date()
+    cal = utils.get_calendar()
+    ultima_data_base = cal.offset(today, -6)
+    dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
+
+    for dt_referencia in reversed(dates_range):
         for carteira in carteiras:
             path_download = os.path.join('downloads', carteira)
             if not os.path.exists(path_download):

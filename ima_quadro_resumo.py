@@ -1,8 +1,8 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import csv
-import datetime
 import os
+from datetime import datetime
 
 import pandas as pd
 
@@ -111,7 +111,13 @@ def main():
     name_download_folder = 'quadro-resumo'
     path_download = utils.prepare_download_folder(name_download_folder)
 
-    for dt_referencia in reversed(list(utils.datetime_range(start=ultima_data_base, end=datetime.datetime.now().date()))):
+    # verifica a última data disponível na base
+    today = datetime.now().date()
+    cal = utils.get_calendar()
+    ultima_data_base = cal.offset(today, -6)
+    dates_range = list(utils.datetime_range(start=ultima_data_base, end=today))
+
+    for dt_referencia in reversed(dates_range):
         file_name = os.path.join(path_download, dt_referencia.strftime(
             '%Y%m%d') + '_ima_quadro_resumo.csv')
         download_file(url, dt_referencia, file_name)
