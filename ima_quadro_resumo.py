@@ -31,9 +31,12 @@ def download_file(url, dt_referencia, file_name):
 def import_files(folder_name, path_file_base, ultima_data_base):
     file_list = os.listdir(r"downloads/"+folder_name+"/")
     for file_name in file_list:
+
         if not file_name.endswith('.csv'):
             continue
+
         path_file = os.path.join('downloads', folder_name, file_name)
+
         with open(path_file, 'r', encoding='latin1') as f:
             first_line = f.readline()
             if 'QUADRO-RESUMO' in first_line:
@@ -41,10 +44,16 @@ def import_files(folder_name, path_file_base, ultima_data_base):
                 df = pd.read_csv(path_file, sep=';', skiprows=1,
                                  encoding='latin1', header=0)
                 df['Data de Referência'] = pd.to_datetime(
-                    df['Data de Referência'], format='%d/%m/%Y', errors='ignore')
+                    df['Data de Referência'],
+                    format='%d/%m/%Y',
+                    errors='ignore'
+                )
 
-                # seleciona apenas os registros com data de referencia maior que a data base
-                df = df[(df['Data de Referência'] > ultima_data_base)]
+                # seleciona apenas os registros com data de referencia maior
+                # que a data base
+                selecao = df['Data de Referência'] > pd.to_datetime(
+                    ultima_data_base)
+                df = df[selecao]
 
                 if len(df) == 0:
                     print('Nenhum registro a ser importado', path_file)
