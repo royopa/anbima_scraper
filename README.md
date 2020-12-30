@@ -10,11 +10,9 @@ ANBIMA scraper é um projeto para captura de dados do site da [ANBIMA](https://w
 Para instalar as dependências do projeto utilize o comando abaixo:
 
 ```sh
-> cd anbima_scraper
+> cd [anbima_scraper]
 > pip install -r requirements.txt
 ```
-
-Ou caso vocë utilize o pipenv, utilize o comando abaixo e ative o virtualenv:
 
 ## Utilizando os programas
 
